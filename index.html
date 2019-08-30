@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ViaCep WebService</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- Viewport-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- CSS Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <!-- CSS Personalizado -->
+        <link href="css/estilo.css" rel="stylesheet" media="screen">
+        <!-- Font Google fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Exo&display=swap" rel="stylesheet">
+        
+        <!-- Adicionando Javascript -->
+        <script type="text/javascript" >
+
+        function limpa_formulário_cep() {
+                //Limpa valores do formulário de cep.
+                document.getElementById('rua').value=("");
+                document.getElementById('bairro').value=("");
+                document.getElementById('cidade').value=("");
+                document.getElementById('uf').value=("");
+                document.getElementById('ibge').value=("");
+        }
+
+        function meu_callback(conteudo) {
+            if (!("erro" in conteudo)) {
+                //Atualiza os campos com os valores.
+                document.getElementById('rua').value=(conteudo.logradouro);
+                document.getElementById('bairro').value=(conteudo.bairro);
+                document.getElementById('cidade').value=(conteudo.localidade);
+                document.getElementById('uf').value=(conteudo.uf);
+                document.getElementById('ibge').value=(conteudo.ibge);
+            } //end if.
+            else {
+                //CEP não Encontrado.
+                limpa_formulário_cep();
+                alert("CEP não encontrado.");
+            }
+        }
+
+        function pesquisacep(valor) {
+
+            //Nova variável "cep" somente com dígitos.
+            var cep = valor.replace(/\D/g, '');
+
+            //Verifica se campo cep possui valor informado.
+            if (cep != "") {
+
+                //Expressão regular para validar o CEP.
+                var validacep = /^[0-9]{8}$/;
+
+                //Valida o formato do CEP.
+                if(validacep.test(cep)) {
+
+                    //Preenche os campos com "..." enquanto consulta webservice.
+                    document.getElementById('rua').value="...";
+                    document.getElementById('bairro').value="...";
+                    document.getElementById('cidade').value="...";
+                    document.getElementById('uf').value="...";
+                    document.getElementById('ibge').value="...";
+
+                    //Cria um elemento javascript.
+                    var script = document.createElement('script');
+
+                    //Sincroniza com o callback.
+                    script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+
+                    //Insere script no documento e carrega o conteúdo.
+                    document.body.appendChild(script);
+
+                } //end if.
+                else {
+                    //cep é inválido.
+                    limpa_formulário_cep();
+                    alert("Formato de CEP inválido.");
+                }
+            } //end if.
+            else {
+                //cep sem valor, limpa formulário.
+                limpa_formulário_cep();
+            }
+        };
+
+        </script>
+    </head>
+    <body>
+        <section>
+            <div id="app">
+                <div class="container">
+                <!-- Inicio do formulario -->
+                    <div class="row show-grid">
+                        <form id="formaddress" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <h1>Digite o seu CEP</h1>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                    <form-group method="POST" action=".">
+                                        <label for="inputCep">
+                                            Cep:
+                                        <input name="inputcep" type="text" id="cep"  class="form-control" value="" maxlength="9" 
+                                            onblur="pesquisacep(this.value);" /></label>
+                                    </form-group>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                                    <form-group>
+                                        <label for="inputrua">
+                                            Rua
+                                        <input name="rua" type="text" id="rua" class="form-control" size="100"/></label>
+                                    </form-group>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                    <form-group>
+                                        <label for="inputbairro">
+                                            Bairro:
+                                        <input name="bairro" type="text" id="bairro" class="form-control"  size="60" /></label>
+                                    </form-group>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8 col-sm-8 col-md-4 col-lg-4">
+                                        <form-group>
+                                            <label for="inputcidade">
+                                                Cidade:
+                                            <input name="cidade" type="text" id="cidade" class="form-control" size="60"/></label>
+                                        </form-group>
+                                </div>
+                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <form-group>
+                                            <label for="inputuf">
+                                                Estado:
+                                            <input name="uf" type="text" id="uf" class="form-control"  size="60"/></label><br />
+                                        </form-group>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                        <form-group>
+                                            <label for="inputibge">
+                                                IBGE:
+                                            <input name="ibge" type="text" id="ibge" class="form-control"   size="60"/></label><br />
+                                        </form-group>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>  
+            </div>
+        </section>
+        <script src="js/jquery-3.4.1.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+    </body>
+</html>
